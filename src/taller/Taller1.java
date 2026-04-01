@@ -66,6 +66,42 @@ public class Taller1 {
 		}catch (Exception e) {
 			System.out.println("no se encontro el archivo Registros");
 		}
+		MenuPrincipal();
 	}
 
+	public static void MenuPrincipal() {
+		Scanner scanner = new Scanner(System.in);
+		int opcion = 0;
+		do {
+			System.out.println("1) Menu de usuarios");
+			System.out.println("2) Menu de analisis");
+			System.out.println("3) Salir");
+			opcion = scanner.nextInt();
+			
+			switch(opcion) {
+			case 1:
+				//IngresoUsuario
+			case 2:
+				//MenuAnalisis
+			case 3:
+				System.out.println("Ha salido del menu");
+				break;
+			}
+		}while(opcion != 3);
+	}
+	public static void IngresoUsuario() {
+		Scanner scanner = new Scanner(System.in);
+		System.out.println("Usuario: ");
+		String UsuarioIngresado = scanner.nextLine();
+		
+		System.out.println("Contraseña: ");
+		String ContraseñaIngresada = scanner.nextLine();
+		
+		for(int i= 0;i<usuarios.length;i++) {
+			if(usuarios[i].equals(UsuarioIngresado) && contraseñas[i].equals(ContraseñaIngresada)) {
+				System.out.println("Acceso correcto");
+				//MenUsuario
+			}
+		}
+	}
 }
