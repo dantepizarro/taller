@@ -174,7 +174,7 @@ public class Taller1 {
 				RegistrarActividad(Usuario);
 				break;
 			case 2:
-				//SeleccionarAct(Usuario);
+				SeleccionarAct(Usuario);
 				break;
 			case 3:
 				//EliminarAct(Usuario);
@@ -296,7 +296,210 @@ public class Taller1 {
 		 
 	}
 	
+	public static void SeleccionarAct(String Usuario) {
+		Scanner scanner = new Scanner(System.in);
+		File ArchivoR = new File(nombreArchivoR);
+		System.out.println("Cual deseas modificar: ");
+		System.out.println();
+		System.out.println("0) Regresar");
+		int opcion = 1;
+		String[] lineasSelec = new String[300];
+		for(int i = 0;i<lineasR.length;i++) {
+			if(IDS[i].equals(Usuario)) {
+				System.out.printf("%d) %s%n",opcion++,lineasR[i]);
+				lineasSelec[i] = lineasR[i];
+			}	
+		}
+		while (true) {
+			
+			try {
+				
+				opcion = scanner.nextInt();
+				System.out.println(lineasSelec.length);
+				if(opcion>=0 && opcion<=lineasSelec.length) {
+					break;
+				}else {
+					System.out.println("ingrese una opcion valida");
+				}
+			}catch(Exception e) {
+				System.out.println("Ingrese solo un numero");
+			}
+		}
+		
+		String Seleccionada = lineasSelec[opcion-1];
+		switch(opcion) {
+		case 0:
+			MenUsuario(Usuario);
+			break;
+		default:
+			ModificarAct(Seleccionada,Usuario);
+			break;
+		}
+		
+	}
 	
+	public static void ModificarAct(String seleccionada,String Usuario) {
+		Scanner scanner = new Scanner(System.in);
+		System.out.println("Que deseas modificar");
+		int opcion;
+		do {
+			
+			System.out.println("0) Regresar");
+			System.out.println("1) Fecha");
+			System.out.println("2) Duracion");
+			System.out.println("3) Tipo de actividad");
+			while(true) {
+				System.out.print("Seleccione");
+				
+				try {
+					opcion = scanner.nextInt();
+					if(opcion>=0 && opcion<=3) {
+						break;
+					}else {
+						System.out.println("Ingrese una opcion valida");
+					}
+				}catch(Exception e) {
+					System.out.println("Ingrese solo numeros");
+				}
+			}
+			String[] partes = seleccionada.split(";");
+			switch(opcion) {
+			case 0 :
+				SeleccionarAct(Usuario);
+				break;
+			case 1:
+				int dia,mes,año;
+				while(true) {
+					System.out.println("ingrese el nuevo dia (1-31): ");
+					String entrada = scanner.nextLine();
+					try {
+						dia = Integer.parseInt(entrada);
+						if(dia>=1 && dia<= 31) {
+							break;
+						}else {
+							System.out.println("Ingrese una opcion valida (1-31)");
+						}
+					}catch(Exception e) {
+						System.out.println("ingrese un numero");
+					}
+				}
+				while(true) {
+					System.out.println("ingrese el nuevo mes (1-12): ");
+					String entrada= scanner.nextLine();
+					try {
+						mes = Integer.parseInt(entrada);
+						if(mes>=1 && mes<=12) {
+							break;
+						}else {
+							System.out.println("ingrese una opcion valida (1-12)");
+						}
+					}catch(Exception e) {
+						System.out.println("ingrese solo numeros");
+					}
+				}
+				while(true) {
+					System.out.println("ingrese el nuevo año: ");
+					String entrada = scanner.nextLine();
+					try {
+						año = Integer.parseInt(entrada);
+						if(año>= 1 && año<= 12) {
+							break;
+						}else {
+							System.out.println("Ingrese una opcion valida (1-12)");
+						}
+					}catch(Exception e) {
+						System.out.println("Ingrese solo numeros");
+					}
+				}
+				
+				String FechaNueva = dia+"/"+mes+"/"+año;
+				
+				String LineaNueva = Usuario+";"+FechaNueva+";"+partes[2]+";"+partes[3];
+				for(int i = 0;i<lineasR.length;i++) {
+					if(lineasR[i].equals(seleccionada)) {
+						lineasR[i] = LineaNueva;
+						fechas[i] = FechaNueva;
+						dias[i]= String.valueOf(dia);
+						meses[i]= String.valueOf(mes);
+						años[i]=String.valueOf(año);
+					}
+				}
+				try(BufferedWriter bw = new BufferedWriter(new FileWriter(nombreArchivoR))){
+					for(int i = 0;i<lineasR.length;i++) {
+						bw.write(lineasR[i]);
+						bw.newLine();
+					}
+				}catch (Exception e) {
+					System.out.println("Error al guardar");
+				}
+				break;
+			case 2:
+				int duracionNueva;
+				while(true) {
+					
+					System.out.println("cual es la nueva duracion (1-23): ");
+					String entrada = scanner.nextLine();
+					
+					try {
+						duracionNueva = Integer.parseInt(entrada);
+						if(duracionNueva>= 1 && duracionNueva<= 23) {
+							break;
+						}else {
+							System.out.println("ingrese una opcion valida");
+						}
+					}catch (Exception e) {
+						System.out.println("ingrese solo numeros");
+					}
+				}
+				
+				 LineaNueva = Usuario+";"+partes[1]+";"+duracionNueva+";"+partes[3];
+				 for(int i = 0;i<lineasR.length;i++) {
+					 if(lineasR[i].equals(seleccionada)) {
+						 lineasR[i] = LineaNueva;
+						 Horas[i]=duracionNueva;
+					 }
+				 }
+				 try(BufferedWriter bw = new BufferedWriter(new FileWriter(nombreArchivoR))){
+					 for(int i = 0;i<lineasR.length;i++) {
+						 bw.write(lineasR[i]);
+					 }
+				 }catch(Exception e) {
+					 System.out.println("error al guardar");
+				 }
+				 break;
+			case 3:
+				String Actividad;
+				while(true) {
+					System.out.println("ingrese la actividad");
+					Actividad = scanner.nextLine();
+					if(Actividad.equals(" ")) {
+						break;
+					}else {
+						System.out.println("La actividad no puede estar vacia");	
+					}
+				}
+				
+				LineaNueva = Usuario+";"+partes[1]+";"+partes[2]+";"+Actividad;
+				for(int i = 0;i<lineasR.length;i++) {
+					if(lineasR[i].equals(seleccionada)) {
+						lineasR[i] = LineaNueva;
+						Actividades[i] = Actividad;
+					}
+				}
+				try(BufferedWriter bw = new BufferedWriter(new FileWriter(nombreArchivoR))){
+					 for(int i = 0;i<lineasR.length;i++) {
+						 bw.write(lineasR[i]);
+					 }
+				 }catch(Exception e) {
+					 System.out.println("erro al guardar");
+				 }
+				break;
+			}
+			
+		}while(opcion != 0);
+		System.out.println("se ha modificado la actividad");
+		
+	}
 }
 
 		
