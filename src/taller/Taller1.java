@@ -23,9 +23,12 @@ public class Taller1 {
 	static String[] lineasU = new String[300];
 	static String[] lineasR = new String[300];
 	static String nombreArchivoU = "txt\\Usuarios.txt";
-	static String nombreArchivoR = "txt\\Usuarios.txt";
+	static String nombreArchivoR = "txt\\Registros.txt";
 	
 	public static void main(String[] args) {
+		//Dante Pizarro
+		//22.216.463-k
+		//ICCI
 		Scanner scanner = new Scanner(System.in);
 		File archivoU = new File(nombreArchivoU);
 		
@@ -111,7 +114,7 @@ public class Taller1 {
 				IngresoUsuario();
 				break;
 			case 2:
-				//MenuAnalisis();
+				MenuAnalisis();
 				break;
 			case 3:
 				System.out.println("ha salido del menu");
@@ -124,17 +127,27 @@ public class Taller1 {
 	}
 	
 	public static void IngresoUsuario() {
-		Scanner scanner = new Scanner(System.in);
-		System.out.print("Usuario: ");
-		String UsuarioIngresado = scanner.nextLine();
-		
-		System.out.print("Contraseña: ");
-		String ContraseñaIngresada = scanner.nextLine();
-		
-		for(int i = 0;i<usuarios.length;i++) {
-			if(usuarios[i].equals(UsuarioIngresado) && contraseñas[i].equals(ContraseñaIngresada)) {
-				System.out.println("Acceso Correcto");
-				MenUsuario(UsuarioIngresado);
+		while (true) {
+			
+			boolean Encontrado = false;
+			Scanner scanner = new Scanner(System.in);
+			System.out.print("Usuario: ");
+			String UsuarioIngresado = scanner.nextLine();
+			
+			System.out.print("Contraseña: ");
+			String ContraseñaIngresada = scanner.nextLine();
+			
+			for(int i = 0;i<usuarios.length;i++) {
+				if(usuarios[i].equals(UsuarioIngresado) && contraseñas[i].equals(ContraseñaIngresada)) {
+					Encontrado = true;
+					System.out.println("Acceso Correcto");
+					System.out.println();
+					MenUsuario(UsuarioIngresado);
+					break;
+				}
+			}
+			if(!Encontrado) {
+				System.out.println("Usuario o contraseña incorrectos");
 			}
 		}
 	}
@@ -147,6 +160,7 @@ public class Taller1 {
 		do {
 			
 			System.out.println("Que deseas realizar?");
+			System.out.println();
 			System.out.println("1) Registrar actividad");
 			System.out.println("2) Modificar actividad");
 			System.out.println("3) Eliminar actividad");
@@ -499,6 +513,231 @@ public class Taller1 {
 		}while(opcion != 0);
 		System.out.println("se ha modificado la actividad");
 		
+	}
+	
+	public static void EliminarAct(String Usuario) {
+		Scanner scanner = new Scanner(System.in);
+		System.out.println("Cual deseas eliminar: ");
+		System.out.println();
+		System.out.println("0) Regresar");
+		int opcion = 1;
+		String[] lineasSelec = new String[300];
+		int Ocupados = 0;
+		for(int i = 0;i<lineasR.length;i++) {
+			if(IDS[i].equals(Usuario)) {
+				System.out.printf("%d) %s%n",opcion++,lineasR[i]);
+				lineasSelec[i] = lineasR[i];
+				Ocupados++;
+			}
+		}
+		
+		while(true) {
+			System.out.print("Seleccione: ");
+			
+			try {
+				opcion = scanner.nextInt();
+				if(opcion>=0 && opcion<=lineasSelec.length) {
+					break;
+				}else {
+					System.out.println("ingrese una opcion valida");
+				}
+			}catch(Exception e) {
+				System.out.println("ingrese solo un numero");
+			}
+		}
+		String Seleccionada = lineasSelec[opcion-1];
+		switch(opcion) {
+		case 0:
+			MenUsuario(Usuario);
+			break;
+		default:
+			for(int i =0;i<Ocupados;i++) {
+				if(lineasR[i].equals(Seleccionada)) {
+					lineasR[i] = null;
+					IDS[i] = null;
+					fechas[i] = null;
+					dias[i] = null;
+					meses[i]= null;
+					años[i]=null;
+					Horas[i] = 0;
+					Actividades[i] = null;
+					for(int j = i+1;j<Ocupados;j++,i++) {
+						lineasR[i] = lineasR[j];
+						IDS[i] = IDS[j];
+						fechas[i] = fechas[j];
+						dias[i] = dias[j];
+						meses[i]= meses[j];
+						años[i]=años[j];
+						Horas[i] = 0;
+						Actividades[i] = Actividades[j];
+						
+					}
+					Ocupados--;
+					break;
+				}
+				
+				try (BufferedWriter bw = new BufferedWriter(new FileWriter(nombreArchivoR))){
+					for(int a = 0;a<TotalRegistros;a++) {
+						bw.write(lineasR[a]);
+						bw.newLine();
+					}
+				}catch (Exception e) {
+					System.out.println("error al guardar");
+				}
+			}
+			System.out.println("se ha eliminado la actividad");
+			break;
+		}
+	}
+	
+	public static void CambiarContraseña(String Usuario) {
+		Scanner scanner = new Scanner(System.in);
+		System.out.println("Ingrese la nueva contraseña: ");
+		String nuevaContraseña = scanner.nextLine();
+		for(int i = 0;i<usuarios.length;i++) {
+			if(usuarios[i].equals(Usuario)) {
+				contraseñas[i] = nuevaContraseña;
+				String lineaNueva = Usuario+";"+nuevaContraseña;
+				lineasU[i] = lineaNueva;
+				try(BufferedWriter salida = new BufferedWriter(new FileWriter(nombreArchivoU))){
+					for(int j = 0;j<usuarios.length;j++) {
+						salida.write(lineasU[j]);
+						salida.newLine();
+					}
+				}catch(Exception e) {
+					System.out.println("error");
+				}
+			}
+		}
+		
+		
+	}
+	
+	public static void MenuAnalisis() {
+		Scanner scanner = new Scanner(System.in);
+		System.out.println("Bienvenido al menu de analisis");
+		int opcion;
+		do {
+			
+			System.out.println("que deseas realizar: ");
+			System.out.println("1) Actividad mas realizada");
+			System.out.println("2) Actividad mas realizada por usuario");
+			System.out.println("3) Usuario con mayor procastinacion");
+			System.out.println("4) Ver todas las actividades");
+			System.out.println("5) salir");
+			while(true) {
+				System.out.print("Seleccione: ");
+				String entrada = scanner.nextLine();
+				
+				try {
+					opcion = Integer.parseInt(entrada);
+					if(opcion>= 1 && opcion <=5) {
+						break;
+					}else {
+						System.out.println("ingrese una opcion valida");
+					}
+				}catch(Exception e) {
+					System.out.println("ingrese solo un numero");
+				}
+			}
+			
+			switch(opcion) {
+			case 1:
+				ActMasRealizada();
+				break;
+			case 2:
+				UsuarioActMasRealizada();
+				break;
+			case 3:
+				MayorProcastinacion();
+				break;
+			case 4:
+				VerActividades();
+				break;
+			case 5:
+				MenuPrincipal();
+				break;
+			}
+		}while (opcion != 5) ;
+		
+		
+		
+	}
+	
+	public static void ActMasRealizada() {
+		
+		String actividadMax= "";
+		int MaxHoras = 0;
+		
+		for(int i = 0;i<TotalRegistros; i++) {
+			int suma = 0;
+			for(int j = 0;j<TotalRegistros;j++) {
+				if(Actividades[j] != null && Actividades[i].equals(Actividades[j])) {
+					suma += Horas[j];
+				}
+			}
+			if(suma > MaxHoras) {
+				MaxHoras = suma;
+				actividadMax = Actividades[i];
+			}
+		}
+		System.out.println("Actividad mas realizada: ");
+		System.out.printf("%s -> %d horas%n",actividadMax,MaxHoras);
+		
+		
+	
+	
+	}
+	
+	public static void UsuarioActMasRealizada() {
+		for(int u = 0;u<TotalUsuarios;u++) {
+			String actividadMax = "";
+			int maxHoras = 0;
+			
+			for(int i =0; i<TotalRegistros;i++) {
+				if(IDS[i].equals(usuarios[u])) {
+					int suma = 0;
+					for(int j = 0;j<TotalRegistros;j++) {
+						if(IDS[j].equals(usuarios[u]) && Actividades[j].equals(Actividades[i])) {
+							suma += Horas[j];
+						}
+					}
+					if(suma > maxHoras) {
+						maxHoras = suma;
+						actividadMax = Actividades[i];
+					}
+				}
+			}
+			System.out.printf("%s -> %s -> %d horas%n",usuarios[u],actividadMax,maxHoras);
+		}
+	}
+	
+	public static void MayorProcastinacion() {
+		int MaxHoras = 0;
+		String usuarioMax = "";
+		for(int i = 0; i <TotalUsuarios;i++) {
+			int suma = 0;
+			for(int j = 0;j<TotalRegistros;j++) {
+				if(IDS[j].equals(usuarios[i])) {
+					suma += Horas[j];
+				}
+			}
+			if(suma> MaxHoras) {
+				MaxHoras = suma;
+				usuarioMax = usuarios[i];
+			}
+		}
+		
+		System.out.println("Usuario con mayor procastinacion: ");
+		System.out.println();
+		System.out.printf("%s es el usuario con mayor procastinacion con --> %d hora%ns",usuarioMax,MaxHoras);
+	}
+	
+	public static void VerActividades() {
+		int j = 1;
+		for(int i = 0;i<lineasR.length;i++) {
+			System.out.printf("%d) %s%n",j++,lineasR[i]);
+		}
 	}
 }
 
